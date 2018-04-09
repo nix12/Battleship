@@ -5,7 +5,7 @@ var webpackConfig = require('./webpack.config.js');
 
 module.exports = function(config) {
   config.set({
-    
+
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
 
@@ -31,6 +31,10 @@ module.exports = function(config) {
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
       'spec/index_spec.ts': ['webpack'],
+      'spec/gameboard_spec.ts': ['webpack'],
+      'spec/ship_spec.ts': ['webpack'],
+      'spec/ships_spec.ts': ['webpack'],
+      'spec/player_spec.ts': ['webpack'],
     },
 
     // test results reporter to use

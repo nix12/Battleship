@@ -19,7 +19,7 @@ export class Gameboard {
   renderGrid(): HTMLElement {
     const grid: any[] = this.createGrid();
     const container: HTMLElement = document.querySelector('.container');
-    
+  
     grid.forEach((value: string, index: number) => {
       const cell: HTMLElement = document.createElement('div');
       

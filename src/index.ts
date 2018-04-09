@@ -1,6 +1,7 @@
 import { Gameboard } from './gameboard';
 import { Ship } from './ship';
 import { Ships as ships } from './ships';
+import { Player } from './player';
 
 const gameboard = new Gameboard();
 const grid = gameboard.renderGrid();
