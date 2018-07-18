@@ -1,4 +1,4 @@
-// import { Ship } from '../src/ship';
+import { Ship } from '../src/ship';
 
 // describe('Ship', () => {
 //   const ship = new Ship(5);
@@ -6,8 +6,8 @@
 //   // let shipContainer: HTMLElement;
 
 //   beforeEach(() => {
-//     jasmine.getFixtures().fixturesPath = '/base/spec/javascripts/fixtures';
-//     loadFixtures('SpecRunner.html');
+//     // jasmine.getFixtures().fixturesPath = '/base/spec/javascripts/fixtures';
+//     // loadFixtures('SpecRunner.html');
 
 //     spyOn(ship, 'renderShip').and.callThrough();
 //     ship.renderShip();
