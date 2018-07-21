@@ -3,6 +3,8 @@ import { Ship } from './ship';
 import { Ships as ships } from './ships';
 import { Player } from './player';
 
+// document.addEventListener('DOMContentLoaded', () => {
+
 const gameboard = new Gameboard();
 const grid = gameboard.renderGrid();
 
@@ -29,3 +31,5 @@ function checkBoard(grid: any) {
 }
 
 setInterval(() => checkBoard(grid), 250);
+
+// });

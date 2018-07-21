@@ -2,8 +2,8 @@
 
 // describe('Ships', () => {
 //   beforeEach(() => {
-//     jasmine.getFixtures().fixturesPath = '/base/spec/javascripts/fixtures';
-//     loadFixtures('SpecRunner.html');
+//     // jasmine.getFixtures().fixturesPath = '/base/spec/javascripts/fixtures';
+//     // loadFixtures('SpecRunner.html');
 //   });
 
 //   describe('should have all ships created', () => {

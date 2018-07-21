@@ -19,19 +19,19 @@ export class Gameboard {
   renderGrid(): HTMLElement {
     const grid: any[] = this.createGrid();
     const container: HTMLElement = document.querySelector('.container');
-  
+
     grid.forEach((value: string, index: number) => {
       const cell: HTMLElement = document.createElement('div');
-      
+
       cell.addEventListener('drop', (e: any) => {
         drop(e);
       });
-  
+
       cell.addEventListener('dragover', (e: any) => {
         allowDrop(e);
       });
 
-      cell.addEventListener('dragstart', (e: any) => {	
+      cell.addEventListener('dragstart', (e: any) => {
         drag(e);
       });
 
@@ -46,27 +46,27 @@ export class Gameboard {
       cell.setAttribute('draggable', 'false');
       cell.classList.add('square');
       cell.id = grid[index];
-      // cell.innerHTML = grid[index];
+
       container.appendChild(cell);
-    });	
+    });
 
     container.addEventListener('mouseup', unFocus);
     container.addEventListener('mousemove', unFocus);
-    
+
     return container;
   }
 
   miss(target: string): void {
     const location = document.getElementById(target);
-    
+
     location.classList.add('miss');
   }
 
   recieveAttack(e: any): void {
-    const location = document.getElementById(e.target.id);
+    const location: HTMLElement = document.getElementById(e.target.id);
     type ships = { [key: string]: Ship };
     const ships2: ships = { ...ships };
-    let target: string;
+    let target: number;
 
     if (location.hasChildNodes()) {
       target = e.currentTarget.children[0].getAttribute('data-ship-type');
@@ -81,7 +81,7 @@ export class Gameboard {
       } catch (error) {
         alert('runtime error ' + error.message);
       }
-     
+
     } else {
       this.miss(e.target.id);
     }
@@ -122,7 +122,7 @@ function drop(e: any): void {
         document.getElementById(`${ rangeX },${ y }`)
           .appendChild(document.getElementById(String(id + i)));
       }
-    } 
+    }
   } else {
     if (!preventOutOfBounds(outOfBounds, x, y) && !illegalPlacement(outOfBounds, x, y)) {
       for (let i = 0; i < len; i = i + 1) {
@@ -138,7 +138,7 @@ function drop(e: any): void {
 }
 
 function drag(e: any): void {
-  e.dataTransfer.setData('text/html', e.currentTarget.children[0].id);	
+  e.dataTransfer.setData('text/html', e.currentTarget.children[0].id);
 }
 
 function change_direction(e: any): void {
@@ -149,7 +149,7 @@ function change_direction(e: any): void {
 
   if (targets[0].getAttribute('data-direction') === 'horizontal') {
     if (!preventOutOfBounds(targets, x, y) && !check_collision(targets, x, y)) {
-      for (let i = 0; i < targets.length; i = i + 1) {      
+      for (let i = 0; i < targets.length; i = i + 1) {
         const rangeY = y - i;
 
         document.getElementById(`${ x },${ rangeY }`)
@@ -174,10 +174,10 @@ function change_direction(e: any): void {
 
 function check_collision(ship: any, x: number, y: number): boolean {
   for (let i = 0; i < ship.length - 1; i = i + 1) {
-    if (ship[0].getAttribute('data-direction') === 'horizontal') {   
+    if (ship[0].getAttribute('data-direction') === 'horizontal') {
       const location = document.getElementById(`${ String(x) },${ String(y - i - 1) }`);
       const feedback = document.querySelector('.feedback');
-      
+
       if (location.classList.contains('occupied')) {
         feedback.innerHTML = 'Illegal Move';
         return true;
@@ -185,21 +185,21 @@ function check_collision(ship: any, x: number, y: number): boolean {
     } else {
       const location = document.getElementById(`${ String(x + i + 1) },${ String(y) }`);
       const feedback = document.querySelector('.feedback');
-      
+
       if (location.classList.contains('occupied')) {
         feedback.innerHTML = 'Illegal Move';
         return true;
       }
     }
-  } 
+  }
 }
 
-function preventOutOfBounds(ship: any, x: number, y: number): boolean { 
+function preventOutOfBounds(ship: any, x: number, y: number): boolean {
   for (let i = 0; i < ship.length; i = i + 1) {
-    if (ship[0].getAttribute('data-direction') === 'horizontal') {   
+    if (ship[0].getAttribute('data-direction') === 'horizontal') {
       const location = document.getElementById(`${ String(x + i) },${ String(y) }`);
       const feedback = document.querySelector('.feedback');
-      
+
       if (Number(location.id[0]) > 9) {
         return true;
       }
@@ -216,10 +216,10 @@ function preventOutOfBounds(ship: any, x: number, y: number): boolean {
 
 function illegalPlacement(ship: any, x: number, y: number): boolean {
   for (let i = 0; i < ship.length; i = i + 1) {
-    if (ship[0].getAttribute('data-direction') === 'horizontal') {   
+    if (ship[0].getAttribute('data-direction') === 'horizontal') {
       const location = document.getElementById(`${ String(x + i) },${ String(y) }`);
       const feedback = document.querySelector('.feedback');
-      
+
       if (location.classList.contains('occupied')) {
         feedback.innerHTML = 'Illegal placement';
         return true;
@@ -227,13 +227,13 @@ function illegalPlacement(ship: any, x: number, y: number): boolean {
     } else {
       const location = document.getElementById(`${ String(x) },${ String(y - i) }`);
       const feedback = document.querySelector('.feedback');
-      
+
       if (location.classList.contains('occupied')) {
         feedback.innerHTML = 'Illegal placement';
         return true;
       }
     }
-  } 
+  }
 }
 
 function unFocus(): void {

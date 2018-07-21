@@ -36,17 +36,32 @@
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
 /******/ 		}
 /******/ 	};
 /******/
 /******/ 	// define __esModule on exports
 /******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
 /******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -75,11 +90,235 @@
 /*!**************************!*\
   !*** ./src/gameboard.ts ***!
   \**************************/
-/*! exports provided: Gameboard */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Gameboard\", function() { return Gameboard; });\n/* harmony import */ var _ships__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ships */ \"./src/ships.ts\");\nvar __assign = (undefined && undefined.__assign) || Object.assign || function(t) {\n    for (var s, i = 1, n = arguments.length; i < n; i++) {\n        s = arguments[i];\n        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))\n            t[p] = s[p];\n    }\n    return t;\n};\n\nvar Gameboard = /** @class */ (function () {\n    function Gameboard() {\n    }\n    Gameboard.prototype.createGrid = function () {\n        var grid = [];\n        var row;\n        var column;\n        for (row = 0; row < 10; row = row + 1) {\n            for (column = 0; column < 10; column = column + 1) {\n                grid.push([column, row]);\n            }\n        }\n        return grid;\n    };\n    Gameboard.prototype.renderGrid = function () {\n        var _this = this;\n        var grid = this.createGrid();\n        var container = document.querySelector('.container');\n        grid.forEach(function (value, index) {\n            var cell = document.createElement('div');\n            cell.addEventListener('drop', function (e) {\n                drop(e);\n            });\n            cell.addEventListener('dragover', function (e) {\n                allowDrop(e);\n            });\n            cell.addEventListener('dragstart', function (e) {\n                drag(e);\n            });\n            cell.addEventListener('dblclick', function (e) {\n                change_direction(e);\n            });\n            cell.addEventListener('click', function (e) {\n                _this.recieveAttack(e);\n            });\n            cell.setAttribute('draggable', 'false');\n            cell.classList.add('square');\n            cell.id = grid[index];\n            // cell.innerHTML = grid[index];\n            container.appendChild(cell);\n        });\n        container.addEventListener('mouseup', unFocus);\n        container.addEventListener('mousemove', unFocus);\n        return container;\n    };\n    Gameboard.prototype.miss = function (target) {\n        var location = document.getElementById(target);\n        location.classList.add('miss');\n    };\n    Gameboard.prototype.recieveAttack = function (e) {\n        var location = document.getElementById(e.target.id);\n        var ships2 = __assign({}, _ships__WEBPACK_IMPORTED_MODULE_0__[\"Ships\"]);\n        var target;\n        if (location.hasChildNodes()) {\n            target = e.currentTarget.children[0].getAttribute('data-ship-type');\n        }\n        if (location.classList.contains('occupied')) {\n            console.log(target);\n            console.log('hit', ships2[target]);\n            try {\n                ships2[target].hit(e.target.id);\n            }\n            catch (error) {\n                alert('runtime error ' + error.message);\n            }\n        }\n        else {\n            this.miss(e.target.id);\n        }\n    };\n    return Gameboard;\n}());\n\nfunction allowDrop(e) {\n    e.preventDefault();\n}\nfunction drop(e) {\n    e.preventDefault();\n    var data = e.dataTransfer.getData('text/html');\n    var horizontal = document.getElementById(data);\n    var coordinate = e.target.id;\n    var sections = document.getElementsByClassName(horizontal.className);\n    var x = Number(coordinate[0]);\n    var y = Number(coordinate[coordinate.length - 1]);\n    var len;\n    var id;\n    var outOfBounds;\n    if (horizontal.hasChildNodes()) {\n        len = horizontal.children.length;\n        id = horizontal.children[0].id.slice(0, -1);\n        outOfBounds = horizontal.children;\n    }\n    else {\n        len = sections.length;\n        id = horizontal.id.slice(0, -1);\n        outOfBounds = sections;\n    }\n    if (horizontal.getAttribute('data-direction') === 'horizontal') {\n        if (!preventOutOfBounds(outOfBounds, x, y) && !illegalPlacement(outOfBounds, x, y)) {\n            for (var i = 0; i < len; i = i + 1) {\n                var rangeX = x + i;\n                document.getElementById(rangeX + \",\" + y)\n                    .appendChild(document.getElementById(String(id + i)));\n            }\n        }\n    }\n    else {\n        if (!preventOutOfBounds(outOfBounds, x, y) && !illegalPlacement(outOfBounds, x, y)) {\n            for (var i = 0; i < len; i = i + 1) {\n                var rangeY = y - i;\n                document.getElementById(x + \",\" + rangeY)\n                    .appendChild(document.getElementById(String(id + i)));\n            }\n        }\n    }\n    e.dataTransfer.clearData();\n}\nfunction drag(e) {\n    e.dataTransfer.setData('text/html', e.currentTarget.children[0].id);\n}\nfunction change_direction(e) {\n    var targets = document.getElementsByClassName(e.currentTarget.children[0].className);\n    var coordinate = e.target.id;\n    var x = Number(coordinate[0]);\n    var y = Number(coordinate[coordinate.length - 1]);\n    if (targets[0].getAttribute('data-direction') === 'horizontal') {\n        if (!preventOutOfBounds(targets, x, y) && !check_collision(targets, x, y)) {\n            for (var i = 0; i < targets.length; i = i + 1) {\n                var rangeY = y - i;\n                document.getElementById(x + \",\" + rangeY)\n                    .appendChild(document.querySelector(\"#\" + String(targets[i].id.slice(0, -1) + i) + \".ship\"));\n                document.querySelector(String(\"#\" + (targets[i].id.slice(0, -1) + i) + \".ship\"))\n                    .setAttribute('data-direction', 'vertical');\n            }\n        }\n    }\n    else {\n        if (!preventOutOfBounds(targets, x, y) && !check_collision(targets, x, y)) {\n            for (var i = 0; i < targets.length; i = i + 1) {\n                var rangeX = x + i;\n                document.getElementById(rangeX + \",\" + y)\n                    .appendChild(document.querySelector(\"#\" + String(targets[i].id.slice(0, -1) + i) + \".ship\"));\n                document.querySelector(String(\"#\" + (targets[i].id.slice(0, -1) + i) + \".ship\"))\n                    .setAttribute('data-direction', 'horizontal');\n            }\n        }\n    }\n}\nfunction check_collision(ship, x, y) {\n    for (var i = 0; i < ship.length - 1; i = i + 1) {\n        if (ship[0].getAttribute('data-direction') === 'horizontal') {\n            var location_1 = document.getElementById(String(x) + \",\" + String(y - i - 1));\n            var feedback = document.querySelector('.feedback');\n            if (location_1.classList.contains('occupied')) {\n                feedback.innerHTML = 'Illegal Move';\n                return true;\n            }\n        }\n        else {\n            var location_2 = document.getElementById(String(x + i + 1) + \",\" + String(y));\n            var feedback = document.querySelector('.feedback');\n            if (location_2.classList.contains('occupied')) {\n                feedback.innerHTML = 'Illegal Move';\n                return true;\n            }\n        }\n    }\n}\nfunction preventOutOfBounds(ship, x, y) {\n    for (var i = 0; i < ship.length; i = i + 1) {\n        if (ship[0].getAttribute('data-direction') === 'horizontal') {\n            var location_3 = document.getElementById(String(x + i) + \",\" + String(y));\n            var feedback = document.querySelector('.feedback');\n            if (Number(location_3.id[0]) > 9) {\n                return true;\n            }\n        }\n        else {\n            var location_4 = document.getElementById(String(x) + \",\" + String(y - i));\n            var feedback = document.querySelector('.feedback');\n            if (Number(location_4.id[location_4.id.length - 1]) < 0) {\n                return true;\n            }\n        }\n    }\n}\nfunction illegalPlacement(ship, x, y) {\n    for (var i = 0; i < ship.length; i = i + 1) {\n        if (ship[0].getAttribute('data-direction') === 'horizontal') {\n            var location_5 = document.getElementById(String(x + i) + \",\" + String(y));\n            var feedback = document.querySelector('.feedback');\n            if (location_5.classList.contains('occupied')) {\n                feedback.innerHTML = 'Illegal placement';\n                return true;\n            }\n        }\n        else {\n            var location_6 = document.getElementById(String(x) + \",\" + String(y - i));\n            var feedback = document.querySelector('.feedback');\n            if (location_6.classList.contains('occupied')) {\n                feedback.innerHTML = 'Illegal placement';\n                return true;\n            }\n        }\n    }\n}\nfunction unFocus() {\n    if (document.getSelection()) {\n        document.getSelection().empty();\n    }\n    else {\n        window.getSelection().removeAllRanges();\n    }\n}\n\n\n//# sourceURL=webpack:///./src/gameboard.ts?");
+
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var ships_1 = __webpack_require__(/*! ./ships */ "./src/ships.ts");
+var Gameboard = /** @class */ (function () {
+    function Gameboard() {
+    }
+    Gameboard.prototype.createGrid = function () {
+        var grid = [];
+        var row;
+        var column;
+        for (row = 0; row < 10; row = row + 1) {
+            for (column = 0; column < 10; column = column + 1) {
+                grid.push([column, row]);
+            }
+        }
+        return grid;
+    };
+    Gameboard.prototype.renderGrid = function () {
+        var _this = this;
+        var grid = this.createGrid();
+        var container = document.querySelector('.container');
+        grid.forEach(function (value, index) {
+            var cell = document.createElement('div');
+            cell.addEventListener('drop', function (e) {
+                drop(e);
+            });
+            cell.addEventListener('dragover', function (e) {
+                allowDrop(e);
+            });
+            cell.addEventListener('dragstart', function (e) {
+                drag(e);
+            });
+            cell.addEventListener('dblclick', function (e) {
+                change_direction(e);
+            });
+            cell.addEventListener('click', function (e) {
+                _this.recieveAttack(e);
+            });
+            cell.setAttribute('draggable', 'false');
+            cell.classList.add('square');
+            cell.id = grid[index];
+            container.appendChild(cell);
+        });
+        container.addEventListener('mouseup', unFocus);
+        container.addEventListener('mousemove', unFocus);
+        return container;
+    };
+    Gameboard.prototype.miss = function (target) {
+        var location = document.getElementById(target);
+        location.classList.add('miss');
+    };
+    Gameboard.prototype.recieveAttack = function (e) {
+        var location = document.getElementById(e.target.id);
+        var ships2 = __assign({}, ships_1.Ships);
+        var target;
+        if (location.hasChildNodes()) {
+            target = e.currentTarget.children[0].getAttribute('data-ship-type');
+        }
+        if (location.classList.contains('occupied')) {
+            console.log(target);
+            console.log('hit', ships2[target]);
+            try {
+                ships2[target].hit(e.target.id);
+            }
+            catch (error) {
+                alert('runtime error ' + error.message);
+            }
+        }
+        else {
+            this.miss(e.target.id);
+        }
+    };
+    return Gameboard;
+}());
+exports.Gameboard = Gameboard;
+function allowDrop(e) {
+    e.preventDefault();
+}
+function drop(e) {
+    e.preventDefault();
+    var data = e.dataTransfer.getData('text/html');
+    var horizontal = document.getElementById(data);
+    var coordinate = e.target.id;
+    var sections = document.getElementsByClassName(horizontal.className);
+    var x = Number(coordinate[0]);
+    var y = Number(coordinate[coordinate.length - 1]);
+    var len;
+    var id;
+    var outOfBounds;
+    if (horizontal.hasChildNodes()) {
+        len = horizontal.children.length;
+        id = horizontal.children[0].id.slice(0, -1);
+        outOfBounds = horizontal.children;
+    }
+    else {
+        len = sections.length;
+        id = horizontal.id.slice(0, -1);
+        outOfBounds = sections;
+    }
+    if (horizontal.getAttribute('data-direction') === 'horizontal') {
+        if (!preventOutOfBounds(outOfBounds, x, y) && !illegalPlacement(outOfBounds, x, y)) {
+            for (var i = 0; i < len; i = i + 1) {
+                var rangeX = x + i;
+                document.getElementById(rangeX + "," + y)
+                    .appendChild(document.getElementById(String(id + i)));
+            }
+        }
+    }
+    else {
+        if (!preventOutOfBounds(outOfBounds, x, y) && !illegalPlacement(outOfBounds, x, y)) {
+            for (var i = 0; i < len; i = i + 1) {
+                var rangeY = y - i;
+                document.getElementById(x + "," + rangeY)
+                    .appendChild(document.getElementById(String(id + i)));
+            }
+        }
+    }
+    e.dataTransfer.clearData();
+}
+function drag(e) {
+    e.dataTransfer.setData('text/html', e.currentTarget.children[0].id);
+}
+function change_direction(e) {
+    var targets = document.getElementsByClassName(e.currentTarget.children[0].className);
+    var coordinate = e.target.id;
+    var x = Number(coordinate[0]);
+    var y = Number(coordinate[coordinate.length - 1]);
+    if (targets[0].getAttribute('data-direction') === 'horizontal') {
+        if (!preventOutOfBounds(targets, x, y) && !check_collision(targets, x, y)) {
+            for (var i = 0; i < targets.length; i = i + 1) {
+                var rangeY = y - i;
+                document.getElementById(x + "," + rangeY)
+                    .appendChild(document.querySelector("#" + String(targets[i].id.slice(0, -1) + i) + ".ship"));
+                document.querySelector(String("#" + (targets[i].id.slice(0, -1) + i) + ".ship"))
+                    .setAttribute('data-direction', 'vertical');
+            }
+        }
+    }
+    else {
+        if (!preventOutOfBounds(targets, x, y) && !check_collision(targets, x, y)) {
+            for (var i = 0; i < targets.length; i = i + 1) {
+                var rangeX = x + i;
+                document.getElementById(rangeX + "," + y)
+                    .appendChild(document.querySelector("#" + String(targets[i].id.slice(0, -1) + i) + ".ship"));
+                document.querySelector(String("#" + (targets[i].id.slice(0, -1) + i) + ".ship"))
+                    .setAttribute('data-direction', 'horizontal');
+            }
+        }
+    }
+}
+function check_collision(ship, x, y) {
+    for (var i = 0; i < ship.length - 1; i = i + 1) {
+        if (ship[0].getAttribute('data-direction') === 'horizontal') {
+            var location_1 = document.getElementById(String(x) + "," + String(y - i - 1));
+            var feedback = document.querySelector('.feedback');
+            if (location_1.classList.contains('occupied')) {
+                feedback.innerHTML = 'Illegal Move';
+                return true;
+            }
+        }
+        else {
+            var location_2 = document.getElementById(String(x + i + 1) + "," + String(y));
+            var feedback = document.querySelector('.feedback');
+            if (location_2.classList.contains('occupied')) {
+                feedback.innerHTML = 'Illegal Move';
+                return true;
+            }
+        }
+    }
+}
+function preventOutOfBounds(ship, x, y) {
+    for (var i = 0; i < ship.length; i = i + 1) {
+        if (ship[0].getAttribute('data-direction') === 'horizontal') {
+            var location_3 = document.getElementById(String(x + i) + "," + String(y));
+            var feedback = document.querySelector('.feedback');
+            if (Number(location_3.id[0]) > 9) {
+                return true;
+            }
+        }
+        else {
+            var location_4 = document.getElementById(String(x) + "," + String(y - i));
+            var feedback = document.querySelector('.feedback');
+            if (Number(location_4.id[location_4.id.length - 1]) < 0) {
+                return true;
+            }
+        }
+    }
+}
+function illegalPlacement(ship, x, y) {
+    for (var i = 0; i < ship.length; i = i + 1) {
+        if (ship[0].getAttribute('data-direction') === 'horizontal') {
+            var location_5 = document.getElementById(String(x + i) + "," + String(y));
+            var feedback = document.querySelector('.feedback');
+            if (location_5.classList.contains('occupied')) {
+                feedback.innerHTML = 'Illegal placement';
+                return true;
+            }
+        }
+        else {
+            var location_6 = document.getElementById(String(x) + "," + String(y - i));
+            var feedback = document.querySelector('.feedback');
+            if (location_6.classList.contains('occupied')) {
+                feedback.innerHTML = 'Illegal placement';
+                return true;
+            }
+        }
+    }
+}
+function unFocus() {
+    if (document.getSelection()) {
+        document.getSelection().empty();
+    }
+    else {
+        window.getSelection().removeAllRanges();
+    }
+}
+
 
 /***/ }),
 
@@ -87,11 +326,39 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /*!**********************!*\
   !*** ./src/index.ts ***!
   \**********************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _gameboard__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./gameboard */ \"./src/gameboard.ts\");\n/* harmony import */ var _ships__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ships */ \"./src/ships.ts\");\n\n\nvar gameboard = new _gameboard__WEBPACK_IMPORTED_MODULE_0__[\"Gameboard\"]();\nvar grid = gameboard.renderGrid();\n_ships__WEBPACK_IMPORTED_MODULE_1__[\"Ships\"].carrier;\n_ships__WEBPACK_IMPORTED_MODULE_1__[\"Ships\"].battleship;\n_ships__WEBPACK_IMPORTED_MODULE_1__[\"Ships\"].submarine;\n_ships__WEBPACK_IMPORTED_MODULE_1__[\"Ships\"].destroyer;\n_ships__WEBPACK_IMPORTED_MODULE_1__[\"Ships\"].patrol;\nfunction checkBoard(grid) {\n    var game = grid.childNodes;\n    game.forEach(function (value, index) {\n        var element = game[index].getElementsByClassName('ship');\n        if (element.length > 0) {\n            game[index].setAttribute('draggable', 'true');\n            game[index].classList.add('occupied');\n        }\n        else {\n            game[index].setAttribute('draggable', 'false');\n            game[index].classList.remove('occupied');\n        }\n    });\n}\nsetInterval(function () { return checkBoard(grid); }, 250);\n\n\n//# sourceURL=webpack:///./src/index.ts?");
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var gameboard_1 = __webpack_require__(/*! ./gameboard */ "./src/gameboard.ts");
+var ships_1 = __webpack_require__(/*! ./ships */ "./src/ships.ts");
+// document.addEventListener('DOMContentLoaded', () => {
+var gameboard = new gameboard_1.Gameboard();
+var grid = gameboard.renderGrid();
+ships_1.Ships.carrier;
+ships_1.Ships.battleship;
+ships_1.Ships.submarine;
+ships_1.Ships.destroyer;
+ships_1.Ships.patrol;
+function checkBoard(grid) {
+    var game = grid.childNodes;
+    game.forEach(function (value, index) {
+        var element = game[index].getElementsByClassName('ship');
+        if (element.length > 0) {
+            game[index].setAttribute('draggable', 'true');
+            game[index].classList.add('occupied');
+        }
+        else {
+            game[index].setAttribute('draggable', 'false');
+            game[index].classList.remove('occupied');
+        }
+    });
+}
+setInterval(function () { return checkBoard(grid); }, 250);
+// });
+
 
 /***/ }),
 
@@ -99,11 +366,95 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _gam
 /*!*********************!*\
   !*** ./src/ship.ts ***!
   \*********************/
-/*! exports provided: Ship */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Ship\", function() { return Ship; });\nvar Ship = /** @class */ (function () {\n    function Ship(length) {\n        this.length = length;\n        this.health = length;\n        this.sunk = false;\n    }\n    Ship.prototype.type = function () {\n        if (this.length === 2) {\n            return 'patrol';\n        }\n        if (this.length === 3 && document.body.contains(document.getElementById('submarine0'))\n            && document.body.contains(document.getElementById('submarine1'))\n            && document.body.contains(document.getElementById('submarine2'))) {\n            return 'destroyer';\n        }\n        if (this.length === 3) {\n            return 'submarine';\n        }\n        if (this.length === 4) {\n            return 'battleship';\n        }\n        if (this.length === 5) {\n            return 'carrier';\n        }\n    };\n    Ship.prototype.hit = function (target) {\n        var location = document.getElementById(target);\n        location.classList.add('hit');\n        this.health = this.health - 1;\n    };\n    Ship.prototype.isSunk = function () {\n        if (this.health === 0) {\n            this.sunk = true;\n        }\n    };\n    Ship.prototype.createShip = function () {\n        var ship = [];\n        for (var size = 0; size < this.length; size = size + 1) {\n            ship.push(size);\n        }\n        return ship;\n    };\n    Ship.prototype.renderShip = function () {\n        var _this = this;\n        // const j = jQuery.noConflict();\n        var ship = this.createShip();\n        var shipContainer = document.querySelector(\"#\" + this.type());\n        console.log(this.type());\n        // console.log(document);\n        // console.log(document.getElementById(this.type()));\n        ship.forEach(function (value, index) {\n            var section = document.createElement('div');\n            section.setAttribute('draggable', 'true');\n            section.setAttribute('aria-grabbed', 'false');\n            section.setAttribute('data-direction', 'horizontal');\n            section.setAttribute('data-ship-type', _this.type());\n            section.classList.add('ship');\n            section.classList.add(_this.type());\n            section.id = _this.type() + String(index);\n            shipContainer.appendChild(section);\n        });\n        shipContainer.addEventListener('click', function () {\n            var ship = shipContainer.children;\n            for (var i = 0; i < ship.length; i = i + 1) {\n                ship[i].setAttribute('aria-grabbed', 'true');\n            }\n        });\n        shipContainer.setAttribute('data-direction', 'horizontal');\n        shipContainer.addEventListener('dragstart', function (e) {\n            drag(e);\n        });\n        return shipContainer;\n    };\n    return Ship;\n}());\n\nfunction drag(e) {\n    e.dataTransfer.setData('text/html', e.target.parentNode.id);\n}\n\n\n//# sourceURL=webpack:///./src/ship.ts?");
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Ship = /** @class */ (function () {
+    function Ship(length) {
+        this.length = length;
+        this.health = length;
+        this.sunk = false;
+    }
+    Ship.prototype.type = function () {
+        if (this.length === 2) {
+            return 'patrol';
+        }
+        if (this.length === 3 && document.body.contains(document.getElementById('submarine0'))
+            && document.body.contains(document.getElementById('submarine1'))
+            && document.body.contains(document.getElementById('submarine2'))) {
+            return 'destroyer';
+        }
+        if (this.length === 3) {
+            return 'submarine';
+        }
+        if (this.length === 4) {
+            return 'battleship';
+        }
+        if (this.length === 5) {
+            return 'carrier';
+        }
+        return 'undefined';
+    };
+    Ship.prototype.hit = function (target) {
+        var location = document.getElementById(target);
+        location.classList.add('hit');
+        this.health = this.health - 1;
+    };
+    Ship.prototype.isSunk = function () {
+        if (this.health === 0) {
+            this.sunk = true;
+        }
+    };
+    Ship.prototype.createShip = function () {
+        var ship = [];
+        for (var size = 0; size < this.length; size = size + 1) {
+            ship.push(size);
+        }
+        return ship;
+    };
+    Ship.prototype.renderShip = function () {
+        var _this = this;
+        var ship = this.createShip();
+        // console.log('document', document);
+        var shipContainer = document.querySelector("#" + this.type());
+        // const shipContainer
+        // console.log('type', this.type());
+        // console.log('shipContainer', shipContainer);
+        // console.log('body', document.body);
+        // console.log('type', document.body.querySelectorAll('*'));
+        ship.forEach(function (value, index) {
+            var section = document.createElement('div');
+            section.setAttribute('draggable', 'true');
+            section.setAttribute('aria-grabbed', 'false');
+            section.setAttribute('data-direction', 'horizontal');
+            section.setAttribute('data-ship-type', _this.type());
+            section.classList.add('ship');
+            section.classList.add(_this.type());
+            section.id = _this.type() + String(index);
+            shipContainer.appendChild(section);
+        });
+        shipContainer.addEventListener('click', function () {
+            var ship = shipContainer.children;
+            for (var i = 0; i < ship.length; i = i + 1) {
+                ship[i].setAttribute('aria-grabbed', 'true');
+            }
+        });
+        shipContainer.setAttribute('data-direction', 'horizontal');
+        shipContainer.addEventListener('dragstart', function (e) {
+            drag(e);
+        });
+        return shipContainer;
+    };
+    return Ship;
+}());
+exports.Ship = Ship;
+function drag(e) {
+    e.dataTransfer.setData('text/html', e.target.parentNode.id);
+}
+
 
 /***/ }),
 
@@ -111,12 +462,29 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /*!**********************!*\
   !*** ./src/ships.ts ***!
   \**********************/
-/*! exports provided: Ships */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Ships\", function() { return Ships; });\n/* harmony import */ var _ship__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ship */ \"./src/ship.ts\");\n\nvar Ships;\n(function (Ships) {\n    Ships.patrol = new _ship__WEBPACK_IMPORTED_MODULE_0__[\"Ship\"](2);\n    Ships.destroyer = new _ship__WEBPACK_IMPORTED_MODULE_0__[\"Ship\"](3);\n    Ships.submarine = new _ship__WEBPACK_IMPORTED_MODULE_0__[\"Ship\"](3);\n    Ships.battleship = new _ship__WEBPACK_IMPORTED_MODULE_0__[\"Ship\"](4);\n    Ships.carrier = new _ship__WEBPACK_IMPORTED_MODULE_0__[\"Ship\"](5);\n    Ships.carrier.renderShip();\n    Ships.battleship.renderShip();\n    Ships.submarine.renderShip();\n    Ships.destroyer.renderShip();\n    Ships.patrol.renderShip();\n})(Ships || (Ships = {}));\n\n\n//# sourceURL=webpack:///./src/ships.ts?");
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var ship_1 = __webpack_require__(/*! ./ship */ "./src/ship.ts");
+var Ships;
+(function (Ships) {
+    Ships.patrol = new ship_1.Ship(2);
+    Ships.destroyer = new ship_1.Ship(3);
+    Ships.submarine = new ship_1.Ship(3);
+    Ships.battleship = new ship_1.Ship(4);
+    Ships.carrier = new ship_1.Ship(5);
+    Ships.carrier.renderShip();
+    Ships.battleship.renderShip();
+    Ships.submarine.renderShip();
+    Ships.destroyer.renderShip();
+    Ships.patrol.renderShip();
+})(Ships = exports.Ships || (exports.Ships = {}));
+
 
 /***/ })
 
 /******/ });
+//# sourceMappingURL=bundle.js.map

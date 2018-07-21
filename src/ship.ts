@@ -32,11 +32,13 @@ export class Ship {
     if (this.length === 5) {
       return 'carrier';
     }
+
+    return 'undefined';
   }
 
   hit(target: string): void {
     const location = document.getElementById(target);
-    
+
     location.classList.add('hit');
     this.health = this.health - 1;
   }
@@ -58,12 +60,14 @@ export class Ship {
   }
 
   renderShip(): HTMLElement {
-    // const j = jQuery.noConflict();
     const ship: number[] = this.createShip();
+    // console.log('document', document);
     const shipContainer: HTMLElement = document.querySelector(`#${ this.type() }`);
-    console.log(this.type());
-    // console.log(document);
-    // console.log(document.getElementById(this.type()));
+    // const shipContainer
+    // console.log('type', this.type());
+    // console.log('shipContainer', shipContainer);
+    // console.log('body', document.body);
+    // console.log('type', document.body.querySelectorAll('*'));
     ship.forEach((value: number, index: number) => {
       const section: HTMLElement = document.createElement('div');
 
@@ -75,6 +79,7 @@ export class Ship {
       section.classList.add('ship');
       section.classList.add(this.type());
       section.id = this.type() + String(index);
+
       shipContainer.appendChild(section);
     });
 

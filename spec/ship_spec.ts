@@ -18,15 +18,15 @@ import { Ship } from '../src/ship';
 //   describe('createShip', () => {
 //     it('should create a ship with 5 sections', () => {
 //       expect(shipCreation.length).toBe(5);
-//     });   
+//     });
 //   });
 
 //   describe('renderShip', () => {
 //     // it('should render a ship with 5 sections', () => {
 //     //   expect(shipContainer).toExist();
 //     //   expect(shipContainer.children.length).toBe(5);
-//     // });  
-    
+//     // });
+
 //     it('should be called', () => {
 //       expect(ship.renderShip).toHaveBeenCalled();
 //     });
@@ -35,10 +35,10 @@ import { Ship } from '../src/ship';
 //   describe('type', () => {
 //     it('should return ship type based on length', () => {
 //       expect(ship.type()).toBe('carrier');
-//     });   
+//     });
 //   });
 
 //   describe('hit', () => {
-    
+
 //   });
 // });
