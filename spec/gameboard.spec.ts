@@ -1,17 +1,24 @@
-import 'jest';
-import { Gameboard } from '../src/gameboard';
+import * as puppeteer from 'puppeteer';
 
-describe('Gameboard', () => {
-  const gameboard: Gameboard = new Gameboard();
-  const grid: any[] = gameboard.createGrid();
+describe('Homepage', () => {
+  let browser: any;
+  let page: any;
+  jest.setTimeout(15000);
 
-  describe('createGrid', () => {
-    it('should have a grid of 100 cells', () => {
-      expect(gameboard.createGrid).toHaveBeenCalled();
-    });
+  beforeAll(async() => {
+    browser = await puppeteer.launch({ headless: false });
+    page = await browser.newPage();
+  
+    await page.goto('localhost:8080');
+  });
 
-    it('should have a grid of 100 cells', () => {
-      expect(grid.length).toBe(100);
-    });
+  afterAll(async () => {
+    await browser.close();
+  });
+  
+  test('should have 100 cells', async () => {
+    const gameboard = await page.$eval('.container', (el: any) => el.children.length);
+
+    await expect(gameboard).toBe(100);
   });
 });
