@@ -95,16 +95,9 @@
 
 "use strict";
 
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var ships_1 = __webpack_require__(/*! ./ships */ "./src/ships.ts");
+// import * as Ships from './ships';
+var ship_1 = __webpack_require__(/*! ./ship */ "./src/ship.ts");
 var Gameboard = /** @class */ (function () {
     function Gameboard() {
     }
@@ -155,16 +148,31 @@ var Gameboard = /** @class */ (function () {
     };
     Gameboard.prototype.recieveAttack = function (e) {
         var location = document.getElementById(e.target.id);
-        var ships2 = __assign({}, ships_1.Ships);
+        // type ships = { [key: string]: Ship };
+        // const ships2: ships = { ...ships }; -> Importing and calling module functions
+        // causes trests to break
+        var patrol = new ship_1.Ship(2);
+        var destroyer = new ship_1.Ship(3);
+        var submarine = new ship_1.Ship(3);
+        var battleship = new ship_1.Ship(4);
+        var carrier = new ship_1.Ship(5);
+        var ships = {
+            patrol: ship_1.Ship,
+            destroyer: ship_1.Ship,
+            submarine: ship_1.Ship,
+            battleship: ship_1.Ship,
+            carrier: ship_1.Ship,
+        };
         var target;
+        console.log('ships2', ships);
         if (location.hasChildNodes()) {
             target = e.currentTarget.children[0].getAttribute('data-ship-type');
         }
         if (location.classList.contains('occupied')) {
             console.log(target);
-            console.log('hit', ships2[target]);
+            console.log('hit', ships[target]);
             try {
-                ships2[target].hit(e.target.id);
+                ships[target].hit(e.target.id);
             }
             catch (error) {
                 alert('runtime error ' + error.message);
@@ -180,6 +188,7 @@ exports.Gameboard = Gameboard;
 function allowDrop(e) {
     e.preventDefault();
 }
+exports.allowDrop = allowDrop;
 function drop(e) {
     e.preventDefault();
     var data = e.dataTransfer.getData('text/html');
@@ -221,9 +230,11 @@ function drop(e) {
     }
     e.dataTransfer.clearData();
 }
+exports.drop = drop;
 function drag(e) {
     e.dataTransfer.setData('text/html', e.currentTarget.children[0].id);
 }
+exports.drag = drag;
 function change_direction(e) {
     var targets = document.getElementsByClassName(e.currentTarget.children[0].className);
     var coordinate = e.target.id;
@@ -252,6 +263,7 @@ function change_direction(e) {
         }
     }
 }
+exports.change_direction = change_direction;
 function check_collision(ship, x, y) {
     for (var i = 0; i < ship.length - 1; i = i + 1) {
         if (ship[0].getAttribute('data-direction') === 'horizontal') {
@@ -272,6 +284,7 @@ function check_collision(ship, x, y) {
         }
     }
 }
+exports.check_collision = check_collision;
 function preventOutOfBounds(ship, x, y) {
     for (var i = 0; i < ship.length; i = i + 1) {
         if (ship[0].getAttribute('data-direction') === 'horizontal') {
@@ -290,6 +303,7 @@ function preventOutOfBounds(ship, x, y) {
         }
     }
 }
+exports.preventOutOfBounds = preventOutOfBounds;
 function illegalPlacement(ship, x, y) {
     for (var i = 0; i < ship.length; i = i + 1) {
         if (ship[0].getAttribute('data-direction') === 'horizontal') {
@@ -310,6 +324,7 @@ function illegalPlacement(ship, x, y) {
         }
     }
 }
+exports.illegalPlacement = illegalPlacement;
 function unFocus() {
     if (document.getSelection()) {
         document.getSelection().empty();
@@ -318,6 +333,7 @@ function unFocus() {
         window.getSelection().removeAllRanges();
     }
 }
+exports.unFocus = unFocus;
 
 
 /***/ }),
@@ -333,15 +349,20 @@ function unFocus() {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var gameboard_1 = __webpack_require__(/*! ./gameboard */ "./src/gameboard.ts");
-var ships_1 = __webpack_require__(/*! ./ships */ "./src/ships.ts");
+var ship_1 = __webpack_require__(/*! ./ship */ "./src/ship.ts");
 // document.addEventListener('DOMContentLoaded', () => {
 var gameboard = new gameboard_1.Gameboard();
 var grid = gameboard.renderGrid();
-ships_1.Ships.carrier;
-ships_1.Ships.battleship;
-ships_1.Ships.submarine;
-ships_1.Ships.destroyer;
-ships_1.Ships.patrol;
+var patrol = new ship_1.Ship(2);
+var destroyer = new ship_1.Ship(3);
+var submarine = new ship_1.Ship(3);
+var battleship = new ship_1.Ship(4);
+var carrier = new ship_1.Ship(5);
+carrier.renderShip();
+battleship.renderShip();
+submarine.renderShip();
+destroyer.renderShip();
+patrol.renderShip();
 function checkBoard(grid) {
     var game = grid.childNodes;
     game.forEach(function (value, index) {
@@ -396,7 +417,6 @@ var Ship = /** @class */ (function () {
         if (this.length === 5) {
             return 'carrier';
         }
-        return 'undefined';
     };
     Ship.prototype.hit = function (target) {
         var location = document.getElementById(target);
@@ -418,13 +438,7 @@ var Ship = /** @class */ (function () {
     Ship.prototype.renderShip = function () {
         var _this = this;
         var ship = this.createShip();
-        // console.log('document', document);
-        var shipContainer = document.querySelector("#" + this.type());
-        // const shipContainer
-        // console.log('type', this.type());
-        // console.log('shipContainer', shipContainer);
-        // console.log('body', document.body);
-        // console.log('type', document.body.querySelectorAll('*'));
+        var shipContainer = document.getElementById(this.type());
         ship.forEach(function (value, index) {
             var section = document.createElement('div');
             section.setAttribute('draggable', 'true');
@@ -454,34 +468,7 @@ exports.Ship = Ship;
 function drag(e) {
     e.dataTransfer.setData('text/html', e.target.parentNode.id);
 }
-
-
-/***/ }),
-
-/***/ "./src/ships.ts":
-/*!**********************!*\
-  !*** ./src/ships.ts ***!
-  \**********************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var ship_1 = __webpack_require__(/*! ./ship */ "./src/ship.ts");
-var Ships;
-(function (Ships) {
-    Ships.patrol = new ship_1.Ship(2);
-    Ships.destroyer = new ship_1.Ship(3);
-    Ships.submarine = new ship_1.Ship(3);
-    Ships.battleship = new ship_1.Ship(4);
-    Ships.carrier = new ship_1.Ship(5);
-    Ships.carrier.renderShip();
-    Ships.battleship.renderShip();
-    Ships.submarine.renderShip();
-    Ships.destroyer.renderShip();
-    Ships.patrol.renderShip();
-})(Ships = exports.Ships || (exports.Ships = {}));
+exports.drag = drag;
 
 
 /***/ })

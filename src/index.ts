@@ -1,6 +1,6 @@
 import { Gameboard } from './gameboard';
 import { Ship } from './ship';
-import { Ships as ships } from './ships';
+import * as Ships from './ships';
 import { Player } from './player';
 
 // document.addEventListener('DOMContentLoaded', () => {
@@ -8,11 +8,17 @@ import { Player } from './player';
 const gameboard = new Gameboard();
 const grid = gameboard.renderGrid();
 
-ships.carrier;
-ships.battleship;
-ships.submarine;
-ships.destroyer;
-ships.patrol;
+const patrol: Ship = new Ship(2);
+const destroyer: Ship = new Ship(3);
+const submarine: Ship = new Ship(3);
+const battleship: Ship = new Ship(4);
+const carrier: Ship = new Ship(5);
+
+carrier.renderShip();
+battleship.renderShip();
+submarine.renderShip();
+destroyer.renderShip();
+patrol.renderShip();
 
 function checkBoard(grid: any) {
   const game = grid.childNodes;

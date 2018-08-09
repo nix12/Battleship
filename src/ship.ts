@@ -32,8 +32,6 @@ export class Ship {
     if (this.length === 5) {
       return 'carrier';
     }
-
-    return 'undefined';
   }
 
   hit(target: string): void {
@@ -61,13 +59,8 @@ export class Ship {
 
   renderShip(): HTMLElement {
     const ship: number[] = this.createShip();
-    // console.log('document', document);
-    const shipContainer: HTMLElement = document.querySelector(`#${ this.type() }`);
-    // const shipContainer
-    // console.log('type', this.type());
-    // console.log('shipContainer', shipContainer);
-    // console.log('body', document.body);
-    // console.log('type', document.body.querySelectorAll('*'));
+    const shipContainer: HTMLElement = document.getElementById(this.type());
+    
     ship.forEach((value: number, index: number) => {
       const section: HTMLElement = document.createElement('div');
 
@@ -101,6 +94,6 @@ export class Ship {
   }
 }
 
-function drag(e: any): void {
+export function drag(e: any): void {
   e.dataTransfer.setData('text/html', e.target.parentNode.id);
 }

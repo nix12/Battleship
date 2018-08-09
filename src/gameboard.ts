@@ -1,5 +1,5 @@
+// import * as Ships from './ships';
 import { Ship } from './ship';
-import { Ships as ships } from './ships';
 
 export class Gameboard {
   createGrid(): any[] {
@@ -64,20 +64,36 @@ export class Gameboard {
 
   recieveAttack(e: any): void {
     const location: HTMLElement = document.getElementById(e.target.id);
-    type ships = { [key: string]: Ship };
-    const ships2: ships = { ...ships };
-    let target: number;
+    // type ships = { [key: string]: Ship };
+    // const ships2: ships = { ...ships }; -> Importing and calling module functions
+    // causes trests to break
 
+    const patrol: Ship = new Ship(2);
+    const destroyer: Ship = new Ship(3);
+    const submarine: Ship = new Ship(3);
+    const battleship: Ship = new Ship(4);
+    const carrier: Ship = new Ship(5);
+
+    const ships: any = { 
+      patrol: Ship, 
+      destroyer: Ship, 
+      submarine: Ship, 
+      battleship: Ship, 
+      carrier: Ship, 
+    };
+    
+    let target: number;
+    console.log('ships2', ships);
     if (location.hasChildNodes()) {
       target = e.currentTarget.children[0].getAttribute('data-ship-type');
     }
 
     if (location.classList.contains('occupied')) {
       console.log(target);
-      console.log('hit', ships2[target]);
+      console.log('hit', ships[target]);
 
       try {
-        ships2[target].hit(e.target.id);
+        ships[target].hit(e.target.id);
       } catch (error) {
         alert('runtime error ' + error.message);
       }
@@ -88,11 +104,11 @@ export class Gameboard {
   }
 }
 
-function allowDrop(e: Event): void {
+export function allowDrop(e: Event): void {
   e.preventDefault();
 }
 
-function drop(e: any): void {
+export function drop(e: any): void {
   e.preventDefault();
   const data = e.dataTransfer.getData('text/html');
   const horizontal = document.getElementById(data);
@@ -137,11 +153,11 @@ function drop(e: any): void {
   e.dataTransfer.clearData();
 }
 
-function drag(e: any): void {
+export function drag(e: any): void {
   e.dataTransfer.setData('text/html', e.currentTarget.children[0].id);
 }
 
-function change_direction(e: any): void {
+export function change_direction(e: any): void {
   const targets = document.getElementsByClassName(e.currentTarget.children[0].className);
   const coordinate = e.target.id;
   const x = Number(coordinate[0]);
@@ -172,7 +188,7 @@ function change_direction(e: any): void {
   }
 }
 
-function check_collision(ship: any, x: number, y: number): boolean {
+export function check_collision(ship: any, x: number, y: number): boolean {
   for (let i = 0; i < ship.length - 1; i = i + 1) {
     if (ship[0].getAttribute('data-direction') === 'horizontal') {
       const location = document.getElementById(`${ String(x) },${ String(y - i - 1) }`);
@@ -194,7 +210,7 @@ function check_collision(ship: any, x: number, y: number): boolean {
   }
 }
 
-function preventOutOfBounds(ship: any, x: number, y: number): boolean {
+export function preventOutOfBounds(ship: any, x: number, y: number): boolean {
   for (let i = 0; i < ship.length; i = i + 1) {
     if (ship[0].getAttribute('data-direction') === 'horizontal') {
       const location = document.getElementById(`${ String(x + i) },${ String(y) }`);
@@ -214,7 +230,7 @@ function preventOutOfBounds(ship: any, x: number, y: number): boolean {
   }
 }
 
-function illegalPlacement(ship: any, x: number, y: number): boolean {
+export function illegalPlacement(ship: any, x: number, y: number): boolean {
   for (let i = 0; i < ship.length; i = i + 1) {
     if (ship[0].getAttribute('data-direction') === 'horizontal') {
       const location = document.getElementById(`${ String(x + i) },${ String(y) }`);
@@ -236,7 +252,7 @@ function illegalPlacement(ship: any, x: number, y: number): boolean {
   }
 }
 
-function unFocus(): void {
+export function unFocus(): void {
   if (document.getSelection()) {
     document.getSelection().empty();
   } else {
